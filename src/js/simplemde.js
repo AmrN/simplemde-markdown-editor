@@ -13,7 +13,6 @@ require("codemirror/mode/xml/xml.js");
 var CodeMirrorSpellChecker = require("codemirror-spell-checker");
 var marked = require("marked");
 
-
 // Some variables
 var isMac = /Mac/.test(navigator.platform);
 
@@ -889,6 +888,8 @@ function _toggleHeading(cm, direction, size) {
 		})(i);
 	}
 	cm.focus();
+
+	cm.scrollIntoView();
 }
 
 
@@ -1492,7 +1493,8 @@ SimpleMDE.prototype.render = function(el) {
 		lineWrapping: (options.lineWrapping === false) ? false : true,
 		allowDropFileTypes: ["text/plain"],
 		placeholder: options.placeholder || el.getAttribute("placeholder") || "",
-		styleSelectedText: (options.styleSelectedText != undefined) ? options.styleSelectedText : true
+		styleSelectedText: (options.styleSelectedText != undefined) ? options.styleSelectedText : true,
+		viewportMargin: Infinity,
 	});
 
 	if(options.forceSync === true) {
