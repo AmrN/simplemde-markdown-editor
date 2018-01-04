@@ -75,6 +75,7 @@
   height: 500px;
   background-color: #bbb;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* .gh-markdown-editor-pane  */
@@ -101,6 +102,10 @@
   min-height: 300px;
 
   height: auto;
+
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-bottom: 100px;
 }
 
 
