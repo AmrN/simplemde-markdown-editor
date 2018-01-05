@@ -6,6 +6,7 @@ var codeMirrorEl = document.querySelector(".CodeMirror");
 
 var cm = simplemde.codemirror;
 
+// initHeights();
 
 cm.on("scrollCursorIntoView", (inst, ev) => {
   const currentPos = inst.getCursor();
@@ -25,7 +26,7 @@ cm.on("scrollCursorIntoView", (inst, ev) => {
 
 function reachedEnd() {
   const currentPos = cm.getCursor();
-  const hitSide = cm.findPosV(currentPos,3,'line',).hitSide;
+  const hitSide = cm.findPosV(currentPos, 3, 'line',).hitSide;
 
   if (hitSide) {  
     console.log('hit');
@@ -42,6 +43,10 @@ function scrollToCaret() {
   const scrollContainerHeight = scrollContainer.clientHeight;
   let posDiff = 0;
 
+  if (cm.somethingSelected()) {
+    return;
+  }
+
   if (cmCaret.top < scrollContainerPosY) {
     console.log('minus');
      posDiff = cmCaret.top - (scrollContainerPosY);
@@ -55,7 +60,7 @@ function scrollToCaret() {
     scrollContainer.scrollTop += posDiff;
 
     if (reachedEnd()) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      // scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
 }
 
@@ -66,3 +71,23 @@ function scrollToCaret() {
 //     cm.focus();
 //   }
 // })
+
+// function initHeights() {
+//   const codeMirrorEl = scrollContainer.querySelector('.CodeMirror');
+//   const codeMirrorScrollEl = scrollContainer.querySelector('.CodeMirror-scroll');
+//   const paddingBottom = 30;
+//   const wrapperHeight = getContentHeight(scrollContainer);
+
+//   codeMirrorEl.style.minHeight = wrapperHeight;
+//   codeMirrorScrollEl.style.minHeight = wrapperHeight - paddingBottom;
+//   codeMirrorScrollEl.style.paddingBottom = paddingBottom;
+// }
+
+// function getContentHeight(el) {
+//   const computedStyle = getComputedStyle(el);
+//   let elementHeight = el.clientHeight;  // height with padding
+  
+//   elementHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+
+//   return elementHeight;
+// }

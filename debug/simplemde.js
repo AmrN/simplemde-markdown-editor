@@ -16240,7 +16240,8 @@ function toggleFullScreen(editor) {
 
 
 	// Update toolbar class
-	var wrap = cm.getWrapperElement();
+	// var wrap = cm.getWrapperElement();
+	var wrap = editor.gui.editorWrapper;
 
 	if(!/fullscreen/.test(wrap.previousSibling.className)) {
 		wrap.previousSibling.className += " fullscreen";
@@ -16760,7 +16761,8 @@ function toggleSideBySide(editor) {
 			/\s*editor-preview-active\s*/g, ""
 		);
 		var toolbar = editor.toolbarElements.preview;
-		var toolbar_div = wrapper.previousSibling;
+		// var toolbar_div = wrapper.previousSibling;
+		var toolbar_div = editor.gui.toolbar;
 		toolbar.className = toolbar.className.replace(/\s*active\s*/g, "");
 		toolbar_div.className = toolbar_div.className.replace(/\s*disabled-for-preview*/g, "");
 	}
@@ -16791,7 +16793,8 @@ function toggleSideBySide(editor) {
 function togglePreview(editor) {
 	var cm = editor.codemirror;
 	var wrapper = cm.getWrapperElement();
-	var toolbar_div = wrapper.previousSibling;
+	// var toolbar_div = wrapper.previousSibling;
+	var toolbar_div = editor.gui.toolbar;
 	var toolbar = editor.options.toolbar ? editor.toolbarElements.preview : false;
 	var preview = wrapper.lastChild;
 	if(!preview || !/editor-preview/.test(preview.className)) {
@@ -17546,6 +17549,10 @@ SimpleMDE.prototype.render = function(el) {
 
 	this.gui = {};
 
+	this.gui.editorWrapper = this.createEditorWrapper();
+
+	this.gui.outerContainer = this.createOuterContainer();
+
 	if(options.toolbar !== false) {
 		this.gui.toolbar = this.createToolbar();
 	}
@@ -17560,6 +17567,7 @@ SimpleMDE.prototype.render = function(el) {
 
 	this._rendered = this.element;
 
+	this.adjustHeights();
 
 	// Fixes CodeMirror bug (#344)
 	var temp_cm = this.codemirror;
@@ -17650,9 +17658,56 @@ SimpleMDE.prototype.clearAutosavedValue = function() {
 	}
 };
 
+SimpleMDE.prototype.createEditorWrapper = function() {
+	var cm = this.codemirror;
+	var cmElement = cm.getWrapperElement();
+	var parent = cmElement.parentNode;
+	var editorWrapper = document.createElement('div');
+	editorWrapper.className = 'mde-wrapper';
+
+	parent.insertBefore(editorWrapper, cmElement);
+
+	editorWrapper.appendChild(cmElement);
+	return editorWrapper;
+};
+
+SimpleMDE.prototype.createOuterContainer = function() {
+	var editorWrapper = this.gui.editorWrapper;
+	var parent = editorWrapper.parentNode;
+	var outerContainer = document.createElement('div');
+	outerContainer.className = 'mde-container';
+
+	parent.insertBefore(outerContainer, editorWrapper);
+	outerContainer.appendChild(editorWrapper);
+	return outerContainer;
+}
+
+SimpleMDE.prototype.adjustHeights = function() {
+	var editorWrapper = this.gui.editorWrapper;
+	var codeMirrorEl = editorWrapper.querySelector('.CodeMirror');
+	var codeMirrorScrollEl = editorWrapper.querySelector('.CodeMirror-scroll');
+	var paddingBottom = 30;
+
+	function getContentHeight(el) {
+		var computedStyle = getComputedStyle(el);
+		var elementHeight = el.clientHeight; // height with padding
+
+		elementHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+
+		return elementHeight;
+	}
+
+	var wrapperHeight = getContentHeight(editorWrapper);
+
+	codeMirrorEl.style.minHeight = wrapperHeight;
+	codeMirrorScrollEl.style.minHeight = wrapperHeight - paddingBottom;
+	codeMirrorScrollEl.style.paddingBottom = paddingBottom;
+};
+
 SimpleMDE.prototype.createSideBySide = function() {
 	var cm = this.codemirror;
 	var wrapper = cm.getWrapperElement();
+	// var wrapper = this.gui.editorWrapper;
 	var preview = wrapper.nextSibling;
 
 	if(!preview || !/editor-preview-side/.test(preview.className)) {
@@ -17785,8 +17840,12 @@ SimpleMDE.prototype.createToolbar = function(items) {
 		}
 	});
 
-	var cmWrapper = cm.getWrapperElement();
-	cmWrapper.parentNode.insertBefore(bar, cmWrapper);
+	// var cmWrapper = cm.getWrapperElement();
+	// cmWrapper.parentNode.insertBefore(bar, cmWrapper);
+
+	var outerContainer = this.gui.outerContainer;
+	var editorWrapper = this.gui.editorWrapper;
+	outerContainer.insertBefore(bar, editorWrapper);
 	return bar;
 };
 
@@ -17900,8 +17959,13 @@ SimpleMDE.prototype.createStatusbar = function(status) {
 
 
 	// Insert the status bar into the DOM
-	var cmWrapper = this.codemirror.getWrapperElement();
-	cmWrapper.parentNode.insertBefore(bar, cmWrapper.nextSibling);
+
+	// var cmWrapper = this.codemirror.getWrapperElement();
+	// cmWrapper.parentNode.insertBefore(bar, cmWrapper.nextSibling);
+
+	var outerContainer = this.gui.outerContainer;
+	var editorWrapper = this.gui.editorWrapper;
+	outerContainer.insertBefore(bar, editorWrapper.nextSibling);
 	return bar;
 };
 
