@@ -17414,6 +17414,10 @@ function SimpleMDE(options) {
 		options.autosave.uniqueId = options.autosave.unique_id;
 
 
+	// Merges statusbar with toolbar
+	options.mergeStatusAndToolbar = !!options.mergeStatusAndToolbar;
+
+
 	// Update this options
 	this.options = options;
 
@@ -17558,6 +17562,11 @@ SimpleMDE.prototype.render = function(el) {
 	}
 	if(options.status !== false) {
 		this.gui.statusbar = this.createStatusbar();
+		console.log("here1", options.mergeStatusAndToolbar);
+		if(options.mergeStatusAndToolbar && options.toolbar) {
+			console.log("here2");
+			this.gui.toolbar.appendChild(this.gui.statusbar);
+		}
 	}
 	if(options.autosave != undefined && options.autosave.enabled === true) {
 		this.autosave();
@@ -17662,8 +17671,8 @@ SimpleMDE.prototype.createEditorWrapper = function() {
 	var cm = this.codemirror;
 	var cmElement = cm.getWrapperElement();
 	var parent = cmElement.parentNode;
-	var editorWrapper = document.createElement('div');
-	editorWrapper.className = 'mde-wrapper';
+	var editorWrapper = document.createElement("div");
+	editorWrapper.className = "mde-wrapper";
 
 	parent.insertBefore(editorWrapper, cmElement);
 
@@ -17674,8 +17683,8 @@ SimpleMDE.prototype.createEditorWrapper = function() {
 SimpleMDE.prototype.createOuterContainer = function() {
 	var editorWrapper = this.gui.editorWrapper;
 	var parent = editorWrapper.parentNode;
-	var outerContainer = document.createElement('div');
-	outerContainer.className = 'mde-container';
+	var outerContainer = document.createElement("div");
+	outerContainer.className = "mde-container";
 
 	parent.insertBefore(outerContainer, editorWrapper);
 	outerContainer.appendChild(editorWrapper);
@@ -17684,8 +17693,8 @@ SimpleMDE.prototype.createOuterContainer = function() {
 
 SimpleMDE.prototype.adjustHeights = function() {
 	var editorWrapper = this.gui.editorWrapper;
-	var codeMirrorEl = editorWrapper.querySelector('.CodeMirror');
-	var codeMirrorScrollEl = editorWrapper.querySelector('.CodeMirror-scroll');
+	var codeMirrorEl = editorWrapper.querySelector(".CodeMirror");
+	var codeMirrorScrollEl = editorWrapper.querySelector(".CodeMirror-scroll");
 	var paddingBottom = 30;
 
 	function getContentHeight(el) {
@@ -17762,6 +17771,11 @@ SimpleMDE.prototype.createToolbar = function(items) {
 	var bar = document.createElement("div");
 	bar.className = "editor-toolbar";
 
+	var barElements = document.createElement("div");
+	barElements.className = "editor-toolbar-elements";
+
+	bar.appendChild(barElements);
+
 	var self = this;
 
 	var toolbarData = {};
@@ -17818,7 +17832,7 @@ SimpleMDE.prototype.createToolbar = function(items) {
 			}
 
 			toolbarData[item.name || item] = el;
-			bar.appendChild(el);
+			barElements.appendChild(el);
 		})(items[i]);
 	}
 

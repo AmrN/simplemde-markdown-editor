@@ -1,4 +1,7 @@
-var simplemde = new SimpleMDE({ element: document.getElementById("root") });
+var simplemde = new SimpleMDE({ 
+  element: document.getElementById("root"),
+  mergeStatusAndToolbar: true,
+ });
 
 var scrollContainer = document.querySelector(".mde-wrapper");
 var codeMirrorEl = document.querySelector(".CodeMirror");
@@ -60,7 +63,7 @@ function scrollToCaret() {
     scrollContainer.scrollTop += posDiff;
 
     if (reachedEnd()) {
-      // scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
 }
 
