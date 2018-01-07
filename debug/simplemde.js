@@ -17466,6 +17466,50 @@ SimpleMDE.prototype.markdown = function(text) {
 	}
 };
 
+
+/**
+ * Determine if caret reached the bottom edge of the scrollable wrapper.
+ */
+SimpleMDE.prototype.caretReachedBottomEdge = function() {
+	var cm = this.codemirror;
+	var currentPos = cm.getCursor();
+	var linesThreshold = 2;
+	var hitSide = cm.findPosV(currentPos, linesThreshold, 'line').hitSide;
+
+	if(hitSide) {
+		return true;
+	}
+	return false;
+};
+
+/**
+ * Scroll the wrapper appropriately if caret is out of view.
+ */
+SimpleMDE.prototype.scrollToCaret = function(cm, ev) {
+	var cmCaret = cm.cursorCoords(true, 'window');
+	var scrollContainer = this.gui.editorWrapper;
+	var scrollContainerPosY = scrollContainer.getBoundingClientRect().y;
+	var scrollContainerHeight = scrollContainer.clientHeight;
+	var posDiff = 0;
+
+	if(cm.somethingSelected()) {
+		return;
+	}
+
+	if(cmCaret.top < scrollContainerPosY) {
+		posDiff = (cmCaret.top - scrollContainerPosY);
+
+	} else if(cmCaret.bottom > scrollContainerPosY + scrollContainerHeight) {
+		posDiff = cmCaret.bottom - (scrollContainerPosY + scrollContainerHeight);
+	}
+
+	scrollContainer.scrollTop += posDiff;
+
+	if(this.caretReachedBottomEdge()) {
+		scrollContainer.scrollTop = scrollContainer.scrollHeight;
+	}
+};
+
 /**
  * Render editor to the given element.
  */
@@ -17544,6 +17588,8 @@ SimpleMDE.prototype.render = function(el) {
 		viewportMargin: Infinity,
 	});
 
+	this.codemirror.on("scrollCursorIntoView", this.scrollToCaret.bind(this));
+
 	if(options.forceSync === true) {
 		var cm = this.codemirror;
 		cm.on("change", function() {
@@ -17562,9 +17608,7 @@ SimpleMDE.prototype.render = function(el) {
 	}
 	if(options.status !== false) {
 		this.gui.statusbar = this.createStatusbar();
-		console.log("here1", options.mergeStatusAndToolbar);
 		if(options.mergeStatusAndToolbar && options.toolbar) {
-			console.log("here2");
 			this.gui.toolbar.appendChild(this.gui.statusbar);
 		}
 	}
