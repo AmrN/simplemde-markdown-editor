@@ -1712,9 +1712,9 @@ SimpleMDE.prototype.adjustHeights = function() {
 
 	var wrapperHeight = getContentHeight(editorWrapper);
 
-	codeMirrorEl.style.minHeight = wrapperHeight;
-	codeMirrorScrollEl.style.minHeight = wrapperHeight - paddingBottom;
-	codeMirrorScrollEl.style.paddingBottom = paddingBottom;
+	codeMirrorEl.style.minHeight = wrapperHeight + "px";
+	codeMirrorScrollEl.style.minHeight = (wrapperHeight - paddingBottom) + "px";
+	codeMirrorScrollEl.style.paddingBottom = paddingBottom + "px";
 };
 
 SimpleMDE.prototype.createSideBySide = function() {

@@ -1,5 +1,5 @@
 /**
- * simplemde v1.11.2
+ * @amrn/simplemde v1.11.2
  * Copyright Next Step Webs, Inc.
  * @link https://github.com/NextStepWebs/simplemde-markdown-editor
  * @license MIT
@@ -17752,9 +17752,9 @@ SimpleMDE.prototype.adjustHeights = function() {
 
 	var wrapperHeight = getContentHeight(editorWrapper);
 
-	codeMirrorEl.style.minHeight = wrapperHeight;
-	codeMirrorScrollEl.style.minHeight = wrapperHeight - paddingBottom;
-	codeMirrorScrollEl.style.paddingBottom = paddingBottom;
+	codeMirrorEl.style.minHeight = wrapperHeight + "px";
+	codeMirrorScrollEl.style.minHeight = (wrapperHeight - paddingBottom) + "px";
+	codeMirrorScrollEl.style.paddingBottom = paddingBottom + "px";
 };
 
 SimpleMDE.prototype.createSideBySide = function() {
